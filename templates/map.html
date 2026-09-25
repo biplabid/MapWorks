@@ -86,12 +86,41 @@
         const hoverNameDiv = infoDisplay.querySelector('.hover-name');
         const hoverDataDiv = infoDisplay.querySelector('.hover-data');
 
-        // Loads the OSM of Arunachal Pradesh
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/?#map=7/28.416/94.460">OpenStreetMap</a> contributors'
-            }).addTo(map);
+        const mapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a> contributors'
+        });
 
-        let districtData = {}; // Global variable to store external district data
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri, Maxar, Earthstar Geographics'
+        });
+
+        mapLayer.addTo(map);
+
+        L.control.layers(
+            { "Map": mapLayer, "Satellite": satelliteLayer },
+            null,
+            { position: 'bottomright' }
+        ).addTo(map);
+
+        let currentBase = mapLayer;
+        let districtLayer = null;
+
+        function isSatellite() { return currentBase === satelliteLayer; }
+
+        function getDistrictStyle() {
+            return {
+                color: isSatellite() ? 'white' : 'darkred',
+                weight: 1,
+                fillOpacity: 0.1
+            };
+        }
+
+        map.on('baselayerchange', function(e) {
+            currentBase = e.layer;
+            if (districtLayer) districtLayer.setStyle(getDistrictStyle());
+        });
+
+        let districtData = {};
 
         // Fetch external district data (e.g., population, schools) from district_data.json
         // This data will be linked to districts by their 'district' property.
@@ -144,14 +173,8 @@
                     interactive: false
                 }).addTo(map);
 
-                // Add the GeoJSON data to the map
-                const districtLayer = L.geoJSON(data, {
-                    // Define the default style for districts
-                    style: {
-                        color: "darkred", // Outline color
-                        weight: 1,        // Outline thickness
-                        fillOpacity: 0.1  // Fill transparency
-                    },
+                districtLayer = L.geoJSON(data, {
+                    style: getDistrictStyle,
                     // Function to be called for each feature (district) in the GeoJSON
                     onEachFeature: function (feature, layer) {
                         layer.on({
@@ -159,10 +182,10 @@
                             mouseover: function (e) {
                                 var layer = e.target;
                                 layer.setStyle({
-                                    weight: 3,      // Thicker border on hover
-                                    color: '#000',  // Black border for clarity
-                                    dashArray: '',  // Solid line
-                                    fillOpacity: 0.1 // More opaque fill on hover
+                                    weight: 3,
+                                    color: isSatellite() ? '#ffff00' : '#000',
+                                    dashArray: '',
+                                    fillOpacity: 0.1
                                 });
                                 // Bring the hovered layer to the front to prevent overlap issues
                                 if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -179,14 +202,7 @@
                             },
                             // Event for mouse leaving a district (to reset highlighting)
                             mouseout: function (e) {
-                                // Reset the style of the layer to its original state
-                                L.geoJSON(data, {
-                                    style: {
-                                        color: "darkred",
-                                        weight: 1,
-                                        fillOpacity: 0.1
-                                    }
-                                }).resetStyle(e.target);
+                                districtLayer.resetStyle(e.target);
 
                                 // Check if the current display is showing data or a "no data" message from a previous CLICK.
                                 // This ensures these messages persist on mouseout.
