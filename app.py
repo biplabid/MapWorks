@@ -9,7 +9,7 @@ def index():
     """
     Renders the main map2.html template.
     """
-    return render_template('map3.html')
+    return render_template('map.html')
 
 # Route to serve static files, specifically india_states.json
 @app.route('/static/<path:filename>')
