@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arunachal Pradesh District Data Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+            background-color: #f0f0f0;
+        }
+        #info-display {
+            position: absolute;
+            top: 20px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 1000;
+            pointer-events: none;
+            border: 1px solid #ccc;
+            min-width: 250px;
+        }
+        #info-display .hover-name {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        #info-display .hover-data {
+            font-size: 14px;
+            font-weight: normal;
+            color: #555;
+        }
+        #map-title {
+            position: absolute;
+            top: 20px;
+            left: 60px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 15px;
+            border-radius: 0px;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000080;
+            z-index: 1000;
+            pointer-events: none;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="info-display">
+    <div class="hover-name">Click on a district</div>
+    <div class="hover-data"></div>
+</div>
+<div id="map-title">Key District Data of Arunachal Pradesh</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js">
+</script>
+<script>
+    const map = L.map('map', {
+        center: [28.0, 94.9],
+        zoom: 8,
+        layers: []
+    });
+
+    const infoDisplay = document.getElementById('info-display');
+    const hoverNameDiv = infoDisplay.querySelector('.hover-name');
+    const hoverDataDiv = infoDisplay.querySelector('.hover-data');
+
+    const adminLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a> contributors'
+    });
+
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri, Maxar, Earthstar Geographics'
+    });
+
+    // White/light label overlay suited for dark basemaps
+    const labelsLayer = L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri, HERE, Garmin, FAO, NOAA, USGS'
+        }
+    );
+
+    adminLayer.addTo(map);  // Default base
+    const baseLayers = {
+        "Administrative": adminLayer,
+        "Satellite": satelliteLayer
+    };
+    L.control.layers(baseLayers, null, { position: 'bottomright' }),
+
+
+    L.control.scale({
+        position: 'bottomleft',
+        metric: true,
+        imperial: false,
+        updateWhenIdle: true
+    }),
+
+
+    let currentBaseLayer = adminLayer;
+    let geoJsonLayer;
+    let districtData = {};
+
+    map.on('baselayerchange', function(e) {
+        currentBaseLayer = e.layer;
+        updateGeoJsonStyle();
+
+        // Show labels only on satellite
+        if (currentBaseLayer === satelliteLayer) {
+            if (!map.hasLayer(labelsLayer)) map.addLayer(labelsLayer);
+        } else {
+            if (map.hasLayer(labelsLayer)) map.removeLayer(labelsLayer);
+        }
+    });
+
+    function getCurrentStyle() {
+        return {
+            color: currentBaseLayer === satelliteLayer ? 'yellow' : 'darkred',
+            weight: 1,
+            fillOpacity: 0.1
+        };
+    }
+
+    function updateGeoJsonStyle() {
+        if (geoJsonLayer) {
+            geoJsonLayer.setStyle(getCurrentStyle());
+        }
+    }
+
+    fetch('/static/data/district_data.json')
+        .then(response => response.ok ? response.json() : {})
+        .then(data => { districtData = data; })
+        .catch(error => {
+            hoverNameDiv.textContent = 'Error loading district data!';
+            hoverDataDiv.textContent = '';
+        });
+
+    //fetch('/static/geojson/arunachal_district_boundary.geojson')
+    fetch('/static/geojson/india_states.geojson')
+        .then(response => response.json())
+        .then(data => {
+            geoJsonLayer = L.geoJSON(data, {
+                style: getCurrentStyle(),
+                onEachFeature: function (feature, layer) {
+                    layer.on({
+                        mouseover: function (e) {
+                            e.target.setStyle({
+                                weight: 3,
+                                color: currentBaseLayer === satelliteLayer ? '#ffff00' : '#000',
+                                dashArray: '',
+                                fillOpacity: 0.1
+                            });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                e.target.bringToFront();
+                            }
+                            if (feature.properties && feature.properties.name) {
+                                hoverNameDiv.textContent = feature.properties.name;
+                                hoverDataDiv.textContent = 'Click for details.';
+                            }
+                        },
+                        mouseout: function (e) {
+                            if (currentBaseLayer === satelliteLayer) {
+                                e.target.setStyle({
+                                    color: 'yellow',
+                                    weight: 1,
+                                    fillOpacity: 0.1
+                                });
+                            } else {
+                                geoJsonLayer.resetStyle(e.target);
+                            }
+
+                            const isDisplayShowingClickedResult =
+                                hoverDataDiv.textContent !== '' &&
+                                hoverDataDiv.textContent !== 'Click for details.';
+
+                            if (!isDisplayShowingClickedResult) {
+                                hoverNameDiv.textContent = 'Click on a district';
+                                hoverDataDiv.textContent = '';
+                            }
+                        },
+                        click: function (e) {
+                            const districtName = feature.properties?.name;
+                            if (districtName) {
+                                hoverNameDiv.textContent = districtName;
+                                const dataForDistrict = districtData[districtName];
+                                if (dataForDistrict && Object.keys(dataForDistrict).length > 0) {
+                                    let dataHtml = '';
+                                    for (const key in dataForDistrict) {
+                                        const formattedKey = key.replace(/_/g, ' ');
+                                        dataHtml += `<strong>${formattedKey}:</strong> ${dataForDistrict[key]}<br>`;
+                                    }
+                                    hoverDataDiv.innerHTML = dataHtml;
+                                } else {
+                                    hoverDataDiv.textContent = 'Data not available.';
+                                }
+                            } else {
+                                hoverNameDiv.textContent = 'District (Name N/A)';
+                                hoverDataDiv.textContent = 'No data available or Dist_Name missing in GeoJSON.';
+                            }
+                        }
+                    });
+                }
+            }),
+
+        });
+
+    map.on('click', function() {
+        const isDistrictDataDisplayedFromClick =
+            hoverDataDiv.textContent !== '' && hoverDataDiv.textContent !== 'Click for details.';
+        if (!isDistrictDataDisplayedFromClick) {
+            hoverNameDiv.textContent = 'Click on a district';
+            hoverDataDiv.textContent = '';
+        }
+    });
+
+</script>
+</body>
+</html>

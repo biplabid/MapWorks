@@ -1,0 +1,163 @@
+{
+    "Tawang": {
+        "Population": 49977,
+        "Males": 29623,
+        "Females": 20354,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 2172
+    },
+    "West Kameng": {
+        "Population": 83940,
+        "Males": 46006,
+        "Females": 37934,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 7422
+    },
+    "East Kameng": {
+        "Population": 78690,
+        "Males": 39570,
+        "Females": 39120,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 4134
+    },
+    "Papum Pare": {
+        "Population": 176573,
+        "Males": 90518,
+        "Females": 86055,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 3462
+    },
+    "Upper Subansiri": {
+        "Population": 83448,
+        "Males": 42526,
+        "Females": 40922,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 7032
+    },
+    "Anjaw": {
+        "Population": 21167,
+        "Males": 11507,
+        "Females": 9660,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 6190
+    },
+    "Lohit": {
+        "Population": 145538,
+        "Males": 76543,
+        "Females": 68995,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 3735
+    },
+    "Changlang": {
+        "Population": 148226,
+        "Males": 76426,
+        "Females": 71800,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 4662
+    },
+    "Tirap": {
+        "Population": 111975,
+        "Males": 58319,
+        "Females": 53656,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 2362
+    },
+    "East Siang": {
+        "Population": 99395,
+        "Males": 50743,
+        "Females": 48652,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 3603
+    },
+    "Kurung Kumey": {
+        "Population": 92078,
+        "Males": 47683,
+        "Females": 44395,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 6040
+    },
+    "Lower Subansiri": {
+        "Population": 83030,
+        "Males": 41656,
+        "Females": 41374,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 3460
+    },
+    "Kra Daadi": {
+        "Population": 46123,
+        "Males": "Not specified",
+        "Females": "Not specified",
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 2202
+    },
+    "Namsai": {
+        "Population": 95385,
+        "Males": 48256,
+        "Females": 47129,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 1587
+    },
+    "Longding": {
+        "Population": 56979,
+        "Males": 29496,
+        "Females": 27483,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 1192
+    },
+    "Upper Siang": {
+        "Population": 35320,
+        "Males": 18274,
+        "Females": 17046,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 6118
+    },
+    "Lower Dibang Valley": {
+        "Population": 54080,
+        "Males": 28620,
+        "Females": 25460,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 3900
+    },
+    "West Siang": {
+        "Population": 112272,
+        "Males": 56743,
+        "Females": 55529,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 8325
+    },
+    "Shi Yomi": {
+        "Population": 13310,
+        "Males": 6806,
+        "Females": 6504,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 2875
+    },
+    "Pakke Kessang": {
+        "Population": 7765,
+        "Males": 3943,
+        "Females": 3822,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 1059
+    },
+    "Lepa Rada": {
+        "Population": 16000,
+        "Males": 8000,
+        "Females": 8000,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 96024
+    },
+    "Kamle": {
+        "Population": 22256,
+        "Males": 11468,
+        "Females": 10788,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 200
+    },
+    "Siang": {
+        "Population": 31920,
+        "Males": 16320,
+        "Females": 15600,
+        "No_of_Schools": "Not specified",
+        "Area_sqkm": 2989
+    }
+}
